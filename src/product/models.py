@@ -4,14 +4,22 @@ from django.db import models
 # Create your models here.
 class Variant(models.Model):
     title = models.CharField(max_length=40)
+    color = models.CharField(max_length=20, default=None)
+    size = models.CharField(max_length=10, default=None)
     description = models.TextField()
     active = models.BooleanField(default=True)
+    def __str__(self) -> str:
+        return self.title
 
 
 class Product(models.Model):
     title = models.CharField(max_length=255)
     sku = models.SlugField(max_length=255)
     description = models.TextField()
+
+    def __str__(self) -> str:
+        return self.title
+
 
 
 class ProductImage(models.Model):
@@ -24,6 +32,8 @@ class ProductVariant(models.Model):
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
+    def __str__(self) -> str:
+        return self.variant_title
 
 class ProductVariantPrice(models.Model):
     product_variant_one = models.ForeignKey(ProductVariant, on_delete=models.CASCADE,
