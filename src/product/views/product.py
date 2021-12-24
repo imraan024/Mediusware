@@ -19,7 +19,7 @@ class CreateProductView(generic.TemplateView):
 class ProductListView(ListView):
     model = Product
     template_name = 'products/list.html'
-    paginate_by = 1
+    paginate_by = 3
     queryset = Product.objects.all()
     context_object_name = 'products'
 
@@ -30,38 +30,54 @@ class ProductListView(ListView):
         return context
 
 
-    # def get_paginate_by(self, queryset):
-    #     if 'product' in queryset:
-    #         return super().get_paginate_by(queryset['product'])
-    #     else:
-    #         return None
-
-
-# class ProductListView(ListView):
-#     model = Product
-#     template_name = 'products/list.html'
-#     paginate_by = 3
-
 
 class ProductSearchView(ListView):
     template_name = 'products/filter.html'
-    model = Product
-    #success_url = reverse_lazy('list.product')
 
     def get_queryset(self):
         title = self.request.GET.get('title')
         variant = self.request.GET.get('variant')
-        object_list = Product.objects.filter(
-            Q(title__icontains=title) 
+        range_from = self.request.GET.get('price_from')
+        range_to = self.request.GET.get('price_to')
+
+        datetime = self.request.GET.get('date')
+        print(title,variant,range_from, range_to, datetime)
+
+
+        variant_search = Variant.objects.filter(color=variant)
+        print("Variant Search: ", variant_search)
+
+
+        search_results = Product.objects.filter(
+            Q(title__icontains=title)
         )
-        return object_list
-    
+
+        if variant != None:
+            variant_search_query = Product.objects.filter(
+                (
+                    Q(productvariant__variant__color=variant) |
+                    Q(productvariant__variant__size=variant)
+                )
+            )
+            search_results = search_results & variant_search_query
+        if not range_from and not range_to:
+            range_from=0
+            range_to=100000
+        search_obj = ProductVariantPrice.objects.filter(product__in=search_results)
+
+        pricing_search_results = ProductVariantPrice.objects.filter(
+            Q(variant_one_price__range=[range_from, range_to]) |
+            Q(variant_two_price__range=[range_from, range_to]) |
+            Q(variant_three_price__range=[range_from, range_to])
+        )
+        new_search_results = search_obj & pricing_search_results
+        print("---------------",new_search_results)
+        return new_search_results
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        product = Product.objects.all()
         product_var = Variant.objects.all()
         product_var_price = ProductVariantPrice.objects.all()
-        context['product'] = product
         context['variants'] = product_var
         context['product_variant_price'] = product_var_price
         return context

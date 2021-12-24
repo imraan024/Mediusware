@@ -1,5 +1,5 @@
 from django.db import models
-
+import datetime
 
 # Create your models here.
 class Variant(models.Model):
@@ -16,6 +16,19 @@ class Product(models.Model):
     title = models.CharField(max_length=255)
     sku = models.SlugField(max_length=255)
     description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def get_date(self):
+        time = datetime.datetime.now()
+        if self.created_at.day == time.day:
+            return str(time.hour - self.created_at.hour) + " hours ago"
+        else:
+            if self.created_at.month == time.month:
+                return str(time.day - self.created_at.day) + " days ago"
+            else:
+                if self.created_at.year == time.year:
+                    return str(time.month - self.created_at.month) + " months ago"
+        return self.created_at
 
     def __str__(self) -> str:
         return self.title
