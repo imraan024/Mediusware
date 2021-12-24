@@ -32,7 +32,7 @@
                 
             </div>
 
-            <!-- <div class="col-md-3">
+            <div class="col-md-3">
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Price Range</span>
@@ -44,7 +44,7 @@
             </div>
             <div class="col-md-2">
                 <input type="date" name="date" placeholder="Date" class="form-control">
-            </div> -->
+            </div>
             <div class="col-md-1">
                 <button type="submit" class="btn btn-primary float-right"><i class="fa fa-search"></i></button>
             </div>
@@ -83,8 +83,12 @@
                             </dt>
                             <dd class="col-sm-9">
                                 <dl class="row mb-0">
-                                    <dt class="col-sm-4 pb-0">{{variant.price}}</dt>
-                                    <dd class="col-sm-8 pb-0">{{variant.stock}}</dd>
+                                    <dt class="col-sm-4 pb-0">{{variant.variant_one_price}}</dt>
+                                    <dd class="col-sm-8 pb-0">{{variant.variant_one_stock}}</dd><br>
+                                    <dt class="col-sm-4 pb-0">{{variant.variant_two_price}}</dt>
+                                    <dd class="col-sm-8 pb-0">{{variant.variant_two_stock}}</dd><br>
+                                    <dt class="col-sm-4 pb-0">{{variant.variant_three_price}}</dt>
+                                    <dd class="col-sm-8 pb-0">{{variant.variant_three_stock}}</dd>
                                 </dl>
                             </dd>
                             {% else %}

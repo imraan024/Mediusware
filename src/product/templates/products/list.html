@@ -4,6 +4,9 @@
 
 {% block content %}
 
+
+
+
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Products</h1>
 </div>
@@ -32,7 +35,7 @@
                 
             </div>
 
-            <!-- <div class="col-md-3">
+            <div class="col-md-3">
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Price Range</span>
@@ -44,7 +47,7 @@
             </div>
             <div class="col-md-2">
                 <input type="date" name="date" placeholder="Date" class="form-control">
-            </div> -->
+            </div>
             <div class="col-md-1">
                 <button type="submit" class="btn btn-primary float-right"><i class="fa fa-search"></i></button>
             </div>
@@ -65,16 +68,15 @@
                 </thead>
 
                 <tbody>
-                    {% if product %}
-                    {% for item in product %}
+                    {% if products %}
+                    {% for item in products %}
                 <tr>
                     <td>{{ item.id }}</td>
                     <td>{{ item.title }} <br> Created at : 25-Aug-2020</td>
                     <td>{{ item.description }}</td>
                     <td>
-                        
                         <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant">
-                            {% for variant in product_variant_price %}
+                            {% for variant in product_variants %}
                                 {% if variant.product.title == item.title %}
                             <dt class="col-sm-3 pb-0">
                                 {{ variant.product_variant_one.variant.color }}/{{variant.product_variant_one.variant.size }}<br>
@@ -83,8 +85,12 @@
                             </dt>
                             <dd class="col-sm-9">
                                 <dl class="row mb-0">
-                                    <dt class="col-sm-4 pb-0">{{variant.price}}</dt>
-                                    <dd class="col-sm-8 pb-0">{{variant.stock}}</dd>
+                                    <dt class="col-sm-4 pb-0">{{variant.variant_one_price}}</dt>
+                                    <dd class="col-sm-8 pb-0">{{variant.variant_one_stock}}</dd><br>
+                                    <dt class="col-sm-4 pb-0">{{variant.variant_two_price}}</dt>
+                                    <dd class="col-sm-8 pb-0">{{variant.variant_two_stock}}</dd><br>
+                                    <dt class="col-sm-4 pb-0">{{variant.variant_three_price}}</dt>
+                                    <dd class="col-sm-8 pb-0">{{variant.variant_three_stock}}</dd>
                                 </dl>
                             </dd>
                             {% else %}
@@ -109,22 +115,57 @@
         </div>
 
     </div>
-    <div class="pagination">
+    <!-- <div class="pagination mt-5 mb-5">
         <span class="step-links">
-            {% if page_obj.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-            {% endif %}
+          {% if page_obj.has_previous %}
+          <a href="?page=1">&laquo; First</a>
+          <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+          {% endif %}
     
-            <span class="current">
-                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-            </span>
+          {% if object_list.count > 0 %}
+          <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+          </span>
+          {% endif %}
     
-            {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}">next</a>
-                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-            {% endif %}
+          {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}">Next</a>
+          <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+          {% endif %}
         </span>
+      </div> -->
+    <div class="ml-auto" >
+        <div>
+            {% if object_list.count > 0 %}
+            <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+        {% endif %}
+        </div>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+            <li class="page-item">
+                {% if page_obj.has_previous %}
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+                <span class="sr-only">Previous</span>
+                </a>
+                {% endif %}
+            </li>
+            {% for page in page_obj.paginator %}
+            <li class="page-item"><a class="page-link" href="?page={{ page.number }}">{{ page.number }}</a></li>
+            {% endfor %}
+            <li class="page-item">
+                {% if page_obj.has_next %}
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+                <span class="sr-only">Next</span>
+                </a>
+                {% endif %}
+                
+            </li>
+            </ul>
+        </nav>
     </div>
     <div class="card-footer">
         <div class="row justify-content-between">

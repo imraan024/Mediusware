@@ -16,19 +16,32 @@ class CreateProductView(generic.TemplateView):
         context['variants'] = list(variants.all())
         return context
 
-class ProductListView(generic.TemplateView):
-    template_name = 'products/list.html'
+class ProductListView(ListView):
     model = Product
+    template_name = 'products/list.html'
+    paginate_by = 1
+    queryset = Product.objects.all()
+    context_object_name = 'products'
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        product = Product.objects.all()
-        product_var = Variant.objects.all()
-        product_var_price = ProductVariantPrice.objects.all()
-        context['product'] = product
-        context['variants'] = product_var
-        context['product_variant_price'] = product_var_price
+        context = super(ProductListView, self).get_context_data(**kwargs)
+        context['product_variants'] = ProductVariantPrice.objects.all()
+        context['variants'] = Variant.objects.all()
         return context
+
+
+    # def get_paginate_by(self, queryset):
+    #     if 'product' in queryset:
+    #         return super().get_paginate_by(queryset['product'])
+    #     else:
+    #         return None
+
+
+# class ProductListView(ListView):
+#     model = Product
+#     template_name = 'products/list.html'
+#     paginate_by = 3
+
 
 class ProductSearchView(ListView):
     template_name = 'products/filter.html'
