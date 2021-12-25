@@ -1,10 +1,14 @@
 from django.views import generic, View
 from product.models import ProductVariant, ProductVariantPrice, Variant, Product
 from django.views.generic import ListView
+from django.views.generic.edit import UpdateView
+from product.forms import ProductForm, VariantForm, ProductVariantPriceForm
 from django.core.paginator import Paginator
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.db.models import Q
+import datetime
+from django.http import HttpResponseRedirect
 
 class CreateProductView(generic.TemplateView):
     template_name = 'products/create.html'
@@ -33,6 +37,7 @@ class ProductListView(ListView):
 
 class ProductSearchView(ListView):
     template_name = 'products/filter.html'
+    paginate_by = 2
 
     def get_queryset(self):
         title = self.request.GET.get('title')
@@ -40,17 +45,20 @@ class ProductSearchView(ListView):
         range_from = self.request.GET.get('price_from')
         range_to = self.request.GET.get('price_to')
 
-        datetime = self.request.GET.get('date')
-        print(title,variant,range_from, range_to, datetime)
+        date = self.request.GET.get('date')
+        
+        
 
-
-        variant_search = Variant.objects.filter(color=variant)
-        print("Variant Search: ", variant_search)
 
 
         search_results = Product.objects.filter(
             Q(title__icontains=title)
         )
+        if date:
+            date = datetime.datetime.strptime(date, '%Y-%m-%d').date()
+            search_date = Product.objects.filter(created_at__lte=date)
+            search_results = search_results | search_date
+
 
         if variant != None:
             variant_search_query = Product.objects.filter(
@@ -71,7 +79,11 @@ class ProductSearchView(ListView):
             Q(variant_three_price__range=[range_from, range_to])
         )
         new_search_results = search_obj & pricing_search_results
-        print("---------------",new_search_results)
+
+        
+            
+
+
         return new_search_results
 
     def get_context_data(self, **kwargs):
@@ -81,3 +93,27 @@ class ProductSearchView(ListView):
         context['variants'] = product_var
         context['product_variant_price'] = product_var_price
         return context
+
+class EditProductView(UpdateView):
+    pk_url_kwarg = 'id'
+    template_name = 'products/edit.html'
+    model = ProductVariantPrice
+    second_model = Product
+    form_class = ProductVariantPriceForm
+    second_form_class = ProductForm
+    success_url = reverse_lazy('product:list.product')
+
+    def get_context_data(self, **kwargs):
+        context = super(EditProductView, self).get_context_data(**kwargs)
+        context['product'] = True
+        if 'form' not in context:
+            context['form'] = self.form_class(self.request.GET)
+        if 'form2' not in context:
+            context['form2'] = self.second_form_class(self.request.GET)
+        context['product'] = True
+        return context
+
+
+
+
+    

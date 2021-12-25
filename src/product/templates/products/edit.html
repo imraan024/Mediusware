@@ -1,0 +1,17 @@
+{% extends 'backend/base.html' %}
+
+{% block title %} Product List {% endblock %}
+
+{% block content %}
+
+    {% if user.is_authenticated %}
+    <h3>Edit Product</h3>
+        <form method = "POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            {{ form2.as_p }}
+            <button class="btn btn-success">Update</button> <br>
+
+        </form>
+    {% endif %}
+{% endblock %}

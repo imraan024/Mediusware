@@ -1,7 +1,7 @@
 from django.urls import path
 from django.views.generic import TemplateView
 
-from product.views.product import CreateProductView, ProductListView, ProductSearchView
+from product.views.product import CreateProductView, ProductListView, ProductSearchView, EditProductView
 from product.views.variant import VariantView, VariantCreateView, VariantEditView
 
 app_name = "product"
@@ -16,5 +16,5 @@ urlpatterns = [
     path('create/', CreateProductView.as_view(), name='create.product'),
     path('list/', ProductListView.as_view(), name='list.product'),
     path('search/', ProductSearchView.as_view(), name='searched'),
-
+    path('<int:id>/edit', EditProductView.as_view(), name='update'),
 ]
